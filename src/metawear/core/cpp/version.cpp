@@ -67,8 +67,9 @@ void Version::assign(const std::string& new_version) {
         parts.push_back(tempStr);
     }
 
+    // Built without exceptions; nothing caught this length_error anyway.
     if (parts.size() != 3) {
-        throw length_error("version string \'" + new_version + "\' did not split into 3 elements");
+        abort();
     }
     major = atoi(parts.at(0).c_str());
     minor = atoi(parts.at(1).c_str());

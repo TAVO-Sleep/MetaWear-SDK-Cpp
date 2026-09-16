@@ -7,7 +7,9 @@
 #include "metawear/core/cpp/metawearboard_def.h"
 
 #include "miniz.h"
+#if __cpp_exceptions
 #include "json.hpp"
+#endif
 
 FileOperationsDelegate::~FileOperationsDelegate() {
 
@@ -117,6 +119,8 @@ void FileOperations::openZip(const char *filename)
                 return;
             }
             // Pull out the firmware and data filenames
+            // json.hpp needs exceptions; without them this falls through to "error parsing manifest".
+#if __cpp_exceptions
             auto manifest = nlohmann::json::parse(std::string((const char *)p, uncomp_size));
             auto it = manifest.find("manifest");
             if (it != manifest.end()) {
@@ -132,6 +136,7 @@ void FileOperations::openZip(const char *filename)
                     }
                 }
             }
+#endif
             // We're done.
             mz_free(p);
         }

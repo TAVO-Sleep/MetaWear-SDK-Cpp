@@ -45,20 +45,17 @@ void mbl_mw_multi_chnl_temp_configure_ext_thermistor(const MblMwMetaWearBoard *b
 
 // Returns the channel ID
 MblMwTemperatureSource mbl_mw_multi_chnl_temp_get_source(const MblMwMetaWearBoard *board, uint8_t channel) {
-    try {
-        return (MblMwTemperatureSource) board->module_info.at(MBL_MW_MODULE_TEMPERATURE).extra.at(channel);
-    } catch (const out_of_range&) {
+    auto it = board->module_info.find(MBL_MW_MODULE_TEMPERATURE);
+    if (it == board->module_info.end() || channel >= it->second.extra.size()) {
         return MBL_MW_TEMPERATURE_SOURCE_INVALID;
     }
+    return (MblMwTemperatureSource) it->second.extra[channel];
 }
 
 // Returns the number of channels
 uint8_t mbl_mw_multi_chnl_temp_get_num_channels(const MblMwMetaWearBoard *board) {
-    try {
-        return (uint8_t) board->module_info.at(MBL_MW_MODULE_TEMPERATURE).extra.size();
-    } catch (const out_of_range&) {
-        return 0;
-    }
+    auto it = board->module_info.find(MBL_MW_MODULE_TEMPERATURE);
+    return it == board->module_info.end() ? 0 : (uint8_t) it->second.extra.size();
 }
 
 // Name for the loggers

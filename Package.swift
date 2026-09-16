@@ -25,7 +25,9 @@ let package = Package(
             ],
             publicHeadersPath: "src",
             cxxSettings: [
-                .headerSearchPath("src")
+                .headerSearchPath("src"),
+                // A failed lookup then aborts where it happens, so crash reports keep the C++ frames.
+                .unsafeFlags(["-fno-exceptions"])
             ]
         )
     ]

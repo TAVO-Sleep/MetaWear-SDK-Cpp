@@ -211,11 +211,7 @@ void MblMwDataSignal::make_unsigned() {
 
 // Get component of signal
 MblMwDataSignal* mbl_mw_datasignal_get_component(const MblMwDataSignal* signal, uint8_t index) {
-    try {
-        return signal->components.at(index);
-    } catch (const out_of_range&) {
-        return nullptr;
-    }
+    return index < signal->components.size() ? signal->components[index] : nullptr;
 }
 
 // Subscribe to signal
