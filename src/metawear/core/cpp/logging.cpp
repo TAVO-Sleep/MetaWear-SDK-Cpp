@@ -154,6 +154,10 @@ static MblMwDataSignal* guessLogSource(MblMwMetaWearBoard* board, ResponseHeader
     key.disable_silent();
 
     vector<MblMwDataSignal*> possible;
+    // A logger slot outlives a removed processor, so treat a missing signal as no-match.
+    if (!board->module_events.count(key)) {
+        return nullptr;
+    }
     auto source = dynamic_cast<MblMwDataSignal*>(board->module_events.at(key));
 
     possible.push_back(source);
@@ -279,6 +283,10 @@ static void log_source_discovered(shared_ptr<LoggerState> state, MblMwDataSignal
 // Helper function - proc synced
 static void processor_synced(MblMwMetaWearBoard* board, stack<ProcessorEntry>& entries) {
     auto type = guessLogSource(board, entries.top().source, entries.top().offset, entries.top().length);
+    if (type == nullptr) {
+        queue_next_logger(board);
+        return;
+    }
     auto state = GET_LOGGER_STATE(board);
     auto fill_processor = [board](MblMwDataSignal* parent, const ProcessorEntry& entry) {
         auto next = MblMwDataProcessor::transform(parent, entry.config);
